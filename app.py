@@ -12,7 +12,7 @@ result = model.transcribe("Recording.m4a")  # Make sure your file is uploaded
 transcript = result["text"]
 print("Transcript:\n", transcript)
 
-  # 4. Summarize (Optional)
+# 4. Summarize (Optional)
 summarizer = pipeline("summarization")
 text = transcript[:1000]  # Truncate for model limit
 summary = summarizer(text, max_length=130, min_length=30, do_sample=False)[0]['summary_text']
