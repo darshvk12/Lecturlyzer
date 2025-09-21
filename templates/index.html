@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecturyzer - AI-Powered Lecture Analysis</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 50px 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover .upload-icon {
+            transform: scale(1.1);
+            color: #764ba2;
+        }
+
+        .upload-text {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .upload-subtext {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+
+        .tab-content {
+            padding: 40px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .topic-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .topic-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .questions-list {
+            list-style: none;
+        }
+
+        .question-item {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .question-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .question-item .question-text {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .question-item .answer {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 3px solid #28a745;
+        }
+
+        .question-item .answer.show {
+            display: block;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .video-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .video-info {
+            padding: 20px;
+        }
+
+        .video-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .video-description {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .summary-text {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            line-height: 1.7;
+            font-size: 1.1rem;
+            border-left: 5px solid #667eea;
+        }
+
+        .transcript-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid #764ba2;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .ask-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 2px solid #e9ecef;
+        }
+
+        .ask-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .ask-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .ask-btn:hover {
+            background: #218838;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .topics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-brain"></i> Lecturyzer</h1>
+            <p>Transform your lectures into actionable insights with AI-powered analysis</p>
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">Drop your audio lecture files here</div>
+                <div class="upload-subtext">or click to browse (MP3, WAV, OGG, M4A, FLAC, AAC supported)</div>
+                <button class="btn" onclick="document.getElementById('fileInput').click()">
+                    Choose Audio File
+                </button>
+                <input type="file" id="fileInput" class="file-input" accept=".mp3,.wav,.ogg,.m4a,.flac,.aac">
+            </div>
+            
+            <div class="loading" id="loadingSection">
+                <div class="spinner"></div>
+                <p id="loadingText">Analyzing your lecture... This may take a few moments.</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="tabs">
+                <div class="tab active" data-tab="summary">
+                    <i class="fas fa-file-alt"></i> Summary
+                </div>
+                <div class="tab" data-tab="topics">
+                    <i class="fas fa-tags"></i> Key Topics
+                </div>
+                <div class="tab" data-tab="questions">
+                    <i class="fas fa-question-circle"></i> Study Questions
+                </div>
+                <div class="tab" data-tab="resources">
+                    <i class="fas fa-video"></i> Related Videos
+                </div>
+                <div class="tab" data-tab="transcript">
+                    <i class="fas fa-file-text"></i> Transcript
+                </div>
+            </div>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="summary">
+                    <div class="section-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Lecture Summary
+                    </div>
+                    <div class="summary-text" id="summaryText">
+                        Upload an audio file to see the AI-generated summary here.
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="topics">
+                    <div class="section-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Key Topics Covered
+                    </div>
+                    <div class="topics-grid" id="topicsGrid">
+                        <div class="topic-tag">Upload audio to see topics</div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="questions">
+                    <div class="section-title">
+                        <i class="fas fa-brain"></i>
+                        Generated Study Questions
+                    </div>
+                    <ul class="questions-list" id="questionsList">
+                        <li class="question-item">
+                            <div class="question-text">Upload an audio file to see generated questions here.</div>
+                        </li>
+                    </ul>
+
+                    <div class="ask-section">
+                        <h4>Ask a Question About This Lecture:</h4>
+                        <input type="text" id="askInput" class="ask-input" placeholder="Type your question here..." disabled>
+                        <button id="askBtn" class="ask-btn" disabled>Ask Question</button>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="resources">
+                    <div class="section-title">
+                        <i class="fas fa-play-circle"></i>
+                        Recommended Learning Resources
+                    </div>
+                    <div class="video-grid" id="videoGrid">
+                        <div class="video-card">
+                            <div class="video-thumbnail">
+                                <i class="fas fa-play"></i>
+                            </div>
+                            <div class="video-info">
+                                <div class="video-title">Upload audio to see recommendations</div>
+                                <div class="video-description">Related videos will appear here based on your lecture content.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane" id="transcript">
+                    <div class="section-title">
+                        <i class="fas fa-file-text"></i>
+                        Full Transcript
+                    </div>
+                    <div class="transcript-section" id="transcriptText">
+                        Upload an audio file to see the full transcript here.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentSessionId = null;
+        const API_BASE_URL = 'http://localhost:5000'; // Change this to your Flask server URL
+
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const loadingSection = document.getElementById('loadingSection');
+        const resultsSection = document.getElementById('resultsSection');
+        const progressFill = document.getElementById('progressFill');
+        const loadingText = document.getElementById('loadingText');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        // Tab switching functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                
+                // Remove active class from all tabs and panes
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding pane
+                tab.classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+            });
+        });
+
+        // Ask question functionality
+        document.getElementById('askBtn').addEventListener('click', askQuestion);
+        document.getElementById('askInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                askQuestion();
+            }
+        });
+
+        async function handleFileUpload(file) {
+            // Validate file type
+            const allowedTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/m4a', 'audio/flac', 'audio/aac'];
+            const allowedExtensions = ['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            
+            if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+                showError('Please upload a valid audio file (MP3, WAV, OGG, M4A, FLAC, AAC)');
+                return;
+            }
+
+            // Check file size (max 500MB as per Flask config)
+            if (file.size > 500 * 1024 * 1024) {
+                showError('File size too large. Maximum size is 500MB.');
+                return;
+            }
+
+            hideError();
+            showLoading();
+
+            try {
+                const formData = new FormData();
+                formData.append('audio', file);
+
+                loadingText.textContent = 'Uploading and processing audio...';
+                progressFill.style.width = '20%';
+
+                const response = await fetch(`${API_BASE_URL}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+
+                progressFill.style.width = '100%';
+                loadingText.textContent = 'Processing complete!';
+
+                const data = await response.json();
+                currentSessionId = data.session_id;
+
+                // Hide loading and show results
+                setTimeout(() => {
+                    hideLoading();
+                    displayResults(data);
+                    resultsSection.style.display = 'block';
+                }, 1000);
+
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                hideLoading();
+                showError(`Upload failed: ${error.message}. Please try again.`);
+            }
+        }
+
+        function displayResults(data) {
+            // Update summary
+            document.getElementById('summaryText').textContent = data.summary || 'No summary available';
+
+            // Update transcript
+            document.getElementById('transcriptText').textContent = data.transcript || 'No transcript available';
+
+            // Update topics
+            const topicsGrid = document.getElementById('topicsGrid');
+            topicsGrid.innerHTML = '';
+            
+            if (data.topics && data.topics.length > 0) {
+                data.topics.forEach(topic => {
+                    const topicTag = document.createElement('div');
+                    topicTag.className = 'topic-tag';
+                    topicTag.textContent = topic;
+                    topicsGrid.appendChild(topicTag);
+                });
+            } else {
+                topicsGrid.innerHTML = '<div class="topic-tag">No topics identified</div>';
+            }
+
+            // Update questions
+            const questionsList = document.getElementById('questionsList');
+            questionsList.innerHTML = '';
+            
+            if (data.questions && data.questions.length > 0) {
+                data.questions.forEach(question => {
+                    const questionItem = document.createElement('li');
+                    questionItem.className = 'question-item';
+                    questionItem.innerHTML = `
+                        <div class="question-text">${question}</div>
+                        <div class="answer" id="answer-${questionsList.children.length}"></div>
+                    `;
+                    
+                    // Add click handler to show answer
+                    questionItem.addEventListener('click', () => {
+                        const answerId = `answer-${Array.from(questionsList.children).indexOf(questionItem)}`;
+                        const answerDiv = document.getElementById(answerId);
+                        if (!answerDiv.classList.contains('show')) {
+                            getQuestionAnswer(question, answerId);
+                        }
+                    });
+                    
+                    questionsList.appendChild(questionItem);
+                });
+            } else {
+                questionsList.innerHTML = '<li class="question-item"><div class="question-text">No questions generated</div></li>';
+            }
+
+            // Update video recommendations
+            const videoGrid = document.getElementById('videoGrid');
+            videoGrid.innerHTML = '';
+            
+            if (data.recommendations && data.recommendations.length > 0) {
+                data.recommendations.forEach(video => {
+                    const videoCard = document.createElement('div');
+                    videoCard.className = 'video-card';
+                    videoCard.innerHTML = `
+                        <div class="video-thumbnail">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">${video.title}</div>
+                            <div class="video-description">${video.description}</div>
+                        </div>
+                    `;
+                    videoCard.addEventListener('click', () => {
+                        window.open(video.url, '_blank');
+                    });
+                    videoGrid.appendChild(videoCard);
+                });
+            } else {
+                videoGrid.innerHTML = `
+                    <div class="video-card">
+                        <div class="video-thumbnail"><i class="fas fa-play"></i></div>
+                        <div class="video-info">
+                            <div class="video-title">No recommendations available</div>
+                            <div class="video-description">Unable to generate video recommendations at this time.</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Enable ask question functionality
+            document.getElementById('askInput').disabled = false;
+            document.getElementById('askBtn').disabled = false;
+        }
+
+        async function askQuestion() {
+            if (!currentSessionId) return;
+
+            const question = document.getElementById('askInput').value.trim();
+            if (!question) return;
+
+            const askBtn = document.getElementById('askBtn');
+            const originalText = askBtn.textContent;
+            askBtn.disabled = true;
+            askBtn.textContent = 'Processing...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/ask`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        question: question
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to get answer');
+                }
+
+                const data = await response.json();
+                
+                // Add the Q&A to the questions list
+                const questionsList = document.getElementById('questionsList');
+                const questionItem = document.createElement('li');
+                questionItem.className = 'question-item';
+                questionItem.innerHTML = `
+                    <div class="question-text">${question}</div>
+                    <div class="answer show">${data.answer}</div>
+                `;
+                questionsList.insertBefore(questionItem, questionsList.firstChild);
+                
+                // Clear input
+                document.getElementById('askInput').value = '';
+
+            } catch (error) {
+                console.error('Error asking question:', error);
+                alert(`Failed to get answer: ${error.message}`);
+            } finally {
+                askBtn.disabled = false;
+                askBtn.textContent = originalText;
+            }
+        }
+
+        async function getQuestionAnswer(question, answerId) {
+            if (!currentSessionId) return;
+
+            const answerDiv = document.getElementById(answerId);
+            answerDiv.textContent = 'Loading answer...';
+            answerDiv.classList.add('show');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/ask`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        question: question
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to get answer');
+                }
+
+                const data = await response.json();
+                answerDiv.textContent = data.answer;
+
+            } catch (error) {
+                console.error('Error getting answer:', error);
+                answerDiv.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        function showLoading() {
+            loadingSection.style.display = 'block';
+            progressFill.style.width = '0%';
+        }
+
+        function hideLoading() {
+            loadingSection.style.display = 'none';
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
