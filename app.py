@@ -6,9 +6,10 @@ from werkzeug.utils import secure_filename
 from utils.transcription import transcribe_audio
 from utils.summarizer import summarize_text, extract_key_topics
 from utils.question_answer import generate_questions, answer_question
-from utils.youtube_recommend import get_topic_videos
+from utils.youtube_recommend import get_topic_videos, extract_meaningful_topics, is_valid_topic
 import warnings
 import traceback
+import time
 warnings.filterwarnings("ignore")
 
 app = Flask(__name__)
@@ -84,15 +85,33 @@ def upload_file():
         summary = "Summary generation failed"
         try:
             summary = summarize_text(transcript)
+            if summary == transcript or len(summary) > len(transcript) * 0.8:
+                # If summary is too similar to transcript, create a more concise one
+                from utils.summarizer import create_enhanced_extractive_summary
+                summary = create_enhanced_extractive_summary(transcript, num_sentences=3)
         except Exception as e:
             print(f"Summary error: {e}")
             summary = "Unable to generate summary at this time."
         
-        # Extract key topics with error handling
+        # Extract key topics with enhanced filtering
         print(f"Extracting key topics...")
         topics = []
         try:
-            topics = extract_key_topics(transcript)
+            raw_topics = extract_key_topics(transcript)
+            # Filter out generic topics using the improved validation
+            topics = [topic for topic in raw_topics if is_valid_topic(topic)]
+            
+            # If we have too few valid topics, try to extract more meaningful ones
+            if len(topics) < 3:
+                meaningful_topics = extract_meaningful_topics(transcript, max_topics=8)
+                topics.extend(meaningful_topics)
+                # Remove duplicates while preserving order
+                seen = set()
+                topics = [topic for topic in topics if not (topic in seen or seen.add(topic))]
+            
+            # Limit to reasonable number
+            topics = topics[:8]
+            
         except Exception as e:
             print(f"Topic extraction error: {e}")
             topics = ["General Topic", "Key Concepts"]
@@ -111,16 +130,38 @@ def upload_file():
                 "What conclusions are drawn?"
             ]
         
-        # Get YouTube recommendations with error handling
+        # Get YouTube recommendations with enhanced filtering
         print(f"Getting YouTube recommendations for topics: {topics}")
         recommendations = []
         try:
-            for topic in topics[:3]:  # Limit to top 3 topics
-                videos = get_topic_videos(topic)
-                recommendations.extend(videos)
+            valid_topics_for_videos = [topic for topic in topics if is_valid_topic(topic)]
+            print(f"Valid topics for video search: {valid_topics_for_videos}")
+            
+            for topic in valid_topics_for_videos[:3]:  # Limit to top 3 valid topics
+                try:
+                    videos = get_topic_videos(topic)
+                    if videos:  # Only add if we got actual results
+                        recommendations.extend(videos)
+                        print(f"Found {len(videos)} videos for topic: {topic}")
+                    else:
+                        print(f"No videos found for topic: {topic}")
+                except Exception as topic_error:
+                    print(f"Error getting videos for topic '{topic}': {topic_error}")
+                    continue
+                    
         except Exception as e:
             print(f"YouTube recommendation error: {e}")
             recommendations = []
+        
+        processing_stats = {
+            'transcript_length': len(transcript),
+            'summary_length': len(summary),
+            'topics_found': len(topics),
+            'valid_topics': len([t for t in topics if is_valid_topic(t)]),
+            'questions_generated': len(questions),
+            'videos_found': len(recommendations)
+        }
+        print(f"Processing stats: {processing_stats}")
         
         # Store session data
         sessions[session_id] = {
@@ -129,7 +170,8 @@ def upload_file():
             'topics': topics,
             'questions': questions,
             'recommendations': recommendations[:6],  # Limit to 6 videos
-            'filepath': filepath
+            'filepath': filepath,
+            'processing_stats': processing_stats
         }
         
         return jsonify({
@@ -188,6 +230,9 @@ def get_more_videos():
         if not topic:
             return jsonify({'error': 'No topic provided'}), 400
         
+        if not is_valid_topic(topic):
+            return jsonify({'error': 'Invalid topic for video search'}), 400
+        
         try:
             videos = get_topic_videos(topic, max_results=10)
         except Exception as e:
@@ -199,6 +244,35 @@ def get_more_videos():
     except Exception as e:
         print(f"Error in get_more_videos: {str(e)}")
         return jsonify({'error': f'Failed to get videos: {str(e)}'}), 500
+
+@app.route('/stats/<session_id>', methods=['GET'])
+def get_processing_stats(session_id):
+    try:
+        if session_id not in sessions:
+            return jsonify({'error': 'Invalid session'}), 400
+        
+        stats = sessions[session_id].get('processing_stats', {})
+        return jsonify(stats)
+        
+    except Exception as e:
+        print(f"Error getting stats: {str(e)}")
+        return jsonify({'error': f'Failed to get stats: {str(e)}'}), 500
+
+@app.route('/validate_topic', methods=['POST'])
+def validate_topic():
+    try:
+        data = request.get_json()
+        topic = data.get('topic')
+        
+        if not topic:
+            return jsonify({'error': 'No topic provided'}), 400
+        
+        is_valid = is_valid_topic(topic)
+        return jsonify({'valid': is_valid, 'topic': topic})
+        
+    except Exception as e:
+        print(f"Error validating topic: {str(e)}")
+        return jsonify({'error': f'Failed to validate topic: {str(e)}'}), 500
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -215,9 +289,17 @@ def cleanup():
                 cleaned_count += 1
         
         sessions.clear()  # Clear all sessions
-        return jsonify({'message': f'Cleanup completed. Cleaned {cleaned_count} files.'})
+        return jsonify({'message': f'Cleanup completed. Cleaned {cleaned_count} files.'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': time.time(),
+        'active_sessions': len(sessions)
+    }), 200
 
 # Error handlers
 @app.errorhandler(413)
