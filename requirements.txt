@@ -1,0 +1,12 @@
+flask
+flask-cors
+transformers
+torch
+torchaudio
+openai-whisper
+pydub
+nltk
+spacy
+requests
+werkzeug
+numpy
