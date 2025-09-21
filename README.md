@@ -1,100 +1,146 @@
 # 📚 Lecturyzer
 
-Lecturyzer is an AI-powered web application that transforms lecture audio into comprehensive learning resources. It transcribes lectures, summarizes content, highlights key points, generates an index of topics, answers user queries, and even recommends related YouTube videos — all in one intuitive platform.
+Lecturyzer is an AI-powered web application that transforms lecture audio into comprehensive learning resources. It helps students and educators by automatically transcribing, summarizing, extracting key points, generating an index of topics, answering queries, and recommending YouTube videos — all in one intuitive platform.
 
-## 🔍 Features
+# 🚀 Features
 
-- 🎙️ Upload Audio – Upload lectures in .mp3, .wav, or other audio formats.
-- 📝 Transcription – Generate accurate text transcripts from lecture audio.
-- ✨ Summary – Get concise summaries of lengthy lectures.
-- 📌 Key Points – Extract the most important points and insights.
-- ❓ Question Answering – Ask questions and get AI-generated answers based on the lecture.
-- 📺 YouTube Suggestions – Receive video recommendations related to lecture content.
+🎙️ Upload Audio – Upload lectures in .mp3, .wav, or other formats.
 
-🔗 Live Demo (Add your deployment link)  
-📹 Demo Video (Add your YouTube link if available)
+📝 Transcription – Generate accurate text transcripts from lecture audio.
 
-## 🛠️ Tech Stack
+✨ Summarization – Get concise summaries of lengthy lectures.
 
-Frontend: HTML5, CSS3, JavaScript 
-Backend: Python (Flask), SpeechRecognition, Google Translate API, gTTS, HuggingFace Transformers. 
-Others: YouTube Data API.
+📌 Key Points Extraction – Highlight the most important points and insights.
 
-## 📂 Project Structure
+❓ Question Answering – Ask questions and get AI-generated answers based on the lecture content.
 
-Lecturyzer/  
-├── app.py                  # Flask backend  
-├── static/                 # CSS, JS, images  
-├── templates/              # HTML templates  
-├── uploads/                # Uploaded audio files  
-├── utils/  
-│   ├── transcription.py    # Transcription logic  
-│   ├── summarizer.py       # Summarization logic  
-│   ├── question_answer.py  # Q&A system  
-│   ├── youtube_recommend.py # YouTube API integration  
-├── requirements.txt        # Dependencies  
-└── README.md               # Project documentation
+📺 YouTube Suggestions – Receive educational video recommendations related to lecture topics.
 
-## ⚙️ Installation & Setup
+# 🛠️ Tech Stack
 
-1. Clone the repository  
-   git clone https://github.com/darshvk12/lecturyzer.git  
-   cd lecturyzer
+Frontend: HTML5, CSS3, JavaScript
 
-2. Create a virtual environment  
-   python -m venv venv  
-   venv\Scripts\activate on Windows
+Backend: Python (Flask)
 
-3. Install dependencies  
-   pip install -r requirements.txt
+APIs & Libraries:
 
-4. Set up environment variables  
-   Create a `.env` file with your API keys:  
-   OPENAI_API_KEY=your_api_key  
-   YOUTUBE_API_KEY=your_api_key
+SpeechRecognition / Whisper (transcription)
 
-5. Run the app  
-   python app.py
+HuggingFace Transformers (summarization & QnA)
 
-6. Open in browser  
-   http://127.0.0.1:5000/
+Google Translate API & gTTS (multilingual support)
+
+YouTube Data API (video recommendations)
+
+# 📂 Project Structure
+Lecturyzer/
+│── app.py                  # Flask backend (main entry point)
+│── requirements.txt        # Python dependencies
+│── README.md               # Project documentation
+│
+├── static/                 # CSS, JS, images
+│
+├── templates/              # HTML templates (frontend)
+│   └── index.html
+│
+├── uploads/                # Uploaded audio files
+│
+└── utils/                  # Core application logic
+    ├── transcription.py    # Handles lecture transcription
+    ├── summarizer.py       # Summarization logic
+    ├── question_answer.py  # Q&A system
+    └── youtube_recommend.py# YouTube API integration
+
+# ⚙️ Installation & Setup
+
+Clone the repository
+
+git clone https://github.com/darshvk12/lecturyzer.git
+cd lecturyzer
 
 
-## 🧠 How It Works
+Create a virtual environment
 
-1. Audio is uploaded and processed using SpeechRecognition or Whisper to generate text.
-2. The transcript is summarized using transformer models (e.g., T5, BART, or OpenAI/Gemini APIs).
-3. Key points are extracted using NLP techniques.
-4. A Q&A system answers user questions based on the lecture transcript.
-5. Topics are identified and passed to the YouTube API to recommend relevant educational videos.
+python -m venv venv
+# On Windows
+venv\Scripts\activate
+# On macOS/Linux
+source venv/bin/activate
 
-## 🔐 Security & Limitations
 
-- API rate limits may apply (OpenAI, YouTube).
-- Transcription accuracy depends on audio clarity.
-- Data persistence is temporary by default (can be extended).
+# Install dependencies
 
-## 📈 Future Enhancements
+pip install -r requirements.txt
 
-- PDF export of transcripts and summaries  
-- Voice-based chatbot for Q&A  
-- Personalized content recommendations  
-- User accounts with history and analytics
 
-## 🤝 Contributing
+Set up environment variables
+Create a .env file in the root directory with your API keys:
 
-Contributions are welcome!  
-Fork this repository, create a new branch, make your changes, and open a pull request.
+OPENAI_API_KEY=your_openai_key
+YOUTUBE_API_KEY=your_youtube_key
 
-## 📄 License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+Run the app
 
-## 🙋‍♂️ Author
+python app.py
 
-Developed by Darsh  
-📧 darshvk12@gmail.com  
 
-## ⭐ Show Your Support
+Open in browser
 
-If you like this project, give it a ⭐ on GitHub and share it with your friends!
+http://127.0.0.1:5000/
+
+#  How It Works
+
+Upload an audio lecture file.
+
+Transcription → Converts audio into text using SpeechRecognition or Whisper.
+
+Summarization & Key Points → Transformer models generate a concise summary and key insights.
+
+Q&A System → Users ask questions, and AI responds based on the transcript.
+
+Topic Extraction & YouTube Suggestions → Identifies core topics and fetches related YouTube videos.
+
+# 🔐 Security & Limitations
+
+API rate limits may apply (OpenAI, YouTube).
+
+Transcription accuracy depends on audio clarity.
+
+Uploaded files and generated content are temporary by default (extendable).
+
+# 📈 Future Enhancements
+
+📄 Export transcripts & summaries as PDF
+
+🎤 Voice-enabled chatbot for Q&A
+
+🎯 Personalized lecture recommendations
+
+👤 User accounts with history & analytics
+
+# 🤝 Contributing
+
+Contributions are always welcome!
+
+Fork this repository
+
+Create a new branch (feature/new-feature)
+
+Commit your changes
+
+Open a Pull Request
+
+# 📜 License
+
+This project is licensed under the MIT License. See the LICENSE
+ file for details.
+
+# 🙋‍♂️ Author
+
+Darsh
+📧 darshvk12@gmail.com
+
+⭐ Show Your Support
+
+If you found this project helpful, give it a star ⭐ on GitHub and share it with your peers!
