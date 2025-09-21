@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lecturyzer - AI-Powered Lecture Analysis</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,128 +13,219 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --background: #0a0a0f;
+            --foreground: #ffffff;
+            --muted: #1a1a24;
+            --muted-foreground: #9ca3af;
+            --border: #2a2a3a;
+            --input: #1a1a24;
+            --primary: #8b5cf6;
+            --primary-foreground: #ffffff;
+            --secondary: #1e1b4b;
+            --accent: #3b82f6;
+            --destructive: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius: 0.75rem;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--background);
+            color: var(--foreground);
             min-height: 100vh;
-            color: #333;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 0 24px;
         }
 
+        /* Header */
         .header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--foreground);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--muted-foreground);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--foreground);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 120px 0;
             text-align: center;
-            margin-bottom: 40px;
-            color: white;
+            background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
         }
 
-        .header h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        .hero-title {
+            font-size: clamp(48px, 8vw, 80px);
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--foreground) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
         }
 
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--muted-foreground);
+            margin-bottom: 48px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
+        /* Upload Section */
         .upload-section {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .upload-area {
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 50px 20px;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 48px;
+            margin-bottom: 48px;
             position: relative;
             overflow: hidden;
         }
 
-        .upload-area:hover {
-            border-color: #764ba2;
-            background: rgba(102, 126, 234, 0.05);
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 64px 32px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            background: rgba(139, 92, 246, 0.02);
+        }
+
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(139, 92, 246, 0.05);
             transform: translateY(-2px);
         }
 
-        .upload-area.dragover {
-            border-color: #764ba2;
-            background: rgba(102, 126, 234, 0.1);
-            transform: scale(1.02);
-        }
-
         .upload-icon {
-            font-size: 4rem;
-            color: #667eea;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 24px;
+            transition: transform 0.3s ease;
         }
 
         .upload-area:hover .upload-icon {
             transform: scale(1.1);
-            color: #764ba2;
         }
 
         .upload-text {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
+            font-size: 18px;
             font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--foreground);
         }
 
         .upload-subtext {
-            color: #666;
-            margin-bottom: 20px;
+            color: var(--muted-foreground);
+            margin-bottom: 32px;
+            font-size: 14px;
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--primary);
+            color: var(--primary-foreground);
             border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 1.1rem;
+            padding: 12px 24px;
+            border-radius: calc(var(--radius) - 2px);
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            background: #7c3aed;
+            transform: translateY(-1px);
         }
 
         .btn:disabled {
-            opacity: 0.7;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
 
+        .btn-secondary {
+            background: var(--muted);
+            color: var(--foreground);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        /* Loading */
         .loading {
             display: none;
-            margin-top: 20px;
+            text-align: center;
+            padding: 32px;
         }
 
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--border);
+            border-top: 2px solid var(--primary);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
+            margin: 0 auto 16px;
         }
 
         @keyframes spin {
@@ -141,42 +233,68 @@
             100% { transform: rotate(360deg); }
         }
 
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--muted);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Results Section */
         .results-section {
             display: none;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            background: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             overflow: hidden;
         }
 
         .tabs {
             display: flex;
-            background: #f8f9fa;
-            border-bottom: 1px solid #eee;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
         }
 
         .tab {
             flex: 1;
-            padding: 20px;
+            min-width: 120px;
+            padding: 16px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 14px;
+            border-bottom: 2px solid transparent;
+            color: var(--muted-foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .tab:hover {
-            background: #e9ecef;
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--foreground);
         }
 
         .tab.active {
-            background: white;
-            border-bottom-color: #667eea;
-            color: #667eea;
+            background: var(--muted);
+            border-bottom-color: var(--primary);
+            color: var(--primary);
         }
 
         .tab-content {
-            padding: 40px;
+            padding: 48px;
         }
 
         .tab-pane {
@@ -188,106 +306,161 @@
         }
 
         .section-title {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: #333;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--foreground);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Topics Grid */
         .topics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 16px;
+            margin-bottom: 32px;
         }
 
         .topic-tag {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: var(--primary-foreground);
             padding: 12px 20px;
-            border-radius: 25px;
+            border-radius: calc(var(--radius) - 2px);
             text-align: center;
             font-weight: 600;
-            transition: all 0.3s ease;
+            font-size: 14px;
+            transition: all 0.2s ease;
             cursor: pointer;
         }
 
         .topic-tag:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
         }
 
+        /* Questions */
         .questions-list {
             list-style: none;
+            margin-bottom: 32px;
         }
 
         .question-item {
-            background: #f8f9fa;
+            background: rgba(139, 92, 246, 0.05);
+            border: 1px solid var(--border);
             padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 15px;
-            border-left: 5px solid #667eea;
+            margin-bottom: 12px;
+            border-radius: calc(var(--radius) - 2px);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .question-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
+            background: rgba(139, 92, 246, 0.1);
+            border-color: var(--primary);
+            transform: translateX(4px);
         }
 
-        .question-item .question-text {
+        .question-text {
             font-weight: 600;
-            color: #333;
+            color: var(--foreground);
             margin-bottom: 8px;
         }
 
-        .question-item .answer {
+        .answer {
             display: none;
-            margin-top: 15px;
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
-            border-left: 3px solid #28a745;
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--muted);
+            border-radius: calc(var(--radius) - 4px);
+            border-left: 3px solid var(--success);
+            color: var(--muted-foreground);
         }
 
-        .question-item .answer.show {
+        .answer.show {
             display: block;
         }
 
+        /* Ask Section */
+        .ask-section {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: calc(var(--radius) - 2px);
+            margin-top: 32px;
+        }
+
+        .ask-section h4 {
+            margin-bottom: 16px;
+            color: var(--foreground);
+            font-weight: 600;
+        }
+
+        .ask-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--input);
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) - 2px);
+            color: var(--foreground);
+            font-size: 14px;
+            margin-bottom: 12px;
+            transition: border-color 0.2s;
+        }
+
+        .ask-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .ask-input::placeholder {
+            color: var(--muted-foreground);
+        }
+
+        /* Video Grid */
         .video-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
+            gap: 24px;
         }
 
         .video-card {
-            background: white;
-            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             cursor: pointer;
-            border: 2px solid transparent;
         }
 
         .video-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            border-color: #667eea;
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
         }
 
         .video-thumbnail {
             width: 100%;
             height: 200px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 3rem;
+            color: var(--primary-foreground);
+            font-size: 32px;
+            position: relative;
+        }
+
+        .video-thumbnail::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.1);
         }
 
         .video-info {
@@ -295,242 +468,282 @@
         }
 
         .video-title {
-            font-size: 1.2rem;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 10px;
-            color: #333;
+            margin-bottom: 8px;
+            color: var(--foreground);
+            line-height: 1.4;
         }
 
         .video-description {
-            color: #666;
-            font-size: 0.95rem;
+            color: var(--muted-foreground);
+            font-size: 14px;
             line-height: 1.5;
+        }
+
+        /* Summary and Transcript */
+        .summary-text,
+        .transcript-section {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: calc(var(--radius) - 2px);
+            line-height: 1.7;
+            font-size: 15px;
+            color: var(--muted-foreground);
+        }
+
+        .transcript-section {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 24px;
+        }
+
+        .transcript-section::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .transcript-section::-webkit-scrollbar-track {
+            background: var(--muted);
+        }
+
+        .transcript-section::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        /* Error Message */
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 16px;
+            border-radius: calc(var(--radius) - 2px);
+            margin: 24px 0;
+            display: none;
         }
 
         .file-input {
             display: none;
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #f0f0f0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 20px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .summary-text {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            line-height: 1.7;
-            font-size: 1.1rem;
-            border-left: 5px solid #667eea;
-        }
-
-        .transcript-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border-left: 5px solid #764ba2;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .ask-section {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 20px;
-            border: 2px solid #e9ecef;
-        }
-
-        .ask-input {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 1rem;
-            margin-bottom: 10px;
-        }
-
-        .ask-btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .ask-btn:hover {
-            background: #218838;
-        }
-
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            border-left: 4px solid #dc3545;
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
+            .container {
+                padding: 0 16px;
             }
-            
+
+            .hero {
+                padding: 80px 0;
+            }
+
+            .hero-title {
+                font-size: 40px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
             .tabs {
                 flex-direction: column;
             }
-            
+
+            .tab {
+                min-width: auto;
+            }
+
             .video-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .topics-grid {
                 grid-template-columns: 1fr;
             }
+
+            .upload-section,
+            .tab-content {
+                padding: 24px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-section {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Loading states */
+        .loading-text {
+            color: var(--muted-foreground);
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-brain"></i> Lecturyzer</h1>
-            <p>Transform your lectures into actionable insights with AI-powered analysis</p>
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="#" class="logo">
+                    <i class="fas fa-brain"></i> Lecturyzer
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#docs">Docs</a></li>
+                    <li><a href="#support">Support</a></li>
+                </ul>
+            </nav>
         </div>
+    </header>
 
-        <div class="upload-section">
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                </div>
-                <div class="upload-text">Drop your audio lecture files here</div>
-                <div class="upload-subtext">or click to browse (MP3, WAV, OGG, M4A, FLAC, AAC supported)</div>
-                <button class="btn" onclick="document.getElementById('fileInput').click()">
-                    Choose Audio File
-                </button>
-                <input type="file" id="fileInput" class="file-input" accept=".mp3,.wav,.ogg,.m4a,.flac,.aac">
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1 class="hero-title">Transform lectures into actionable insights</h1>
+                <p class="hero-subtitle">
+                    AI-powered transcription, summarization, and analysis that turns your audio lectures 
+                    into structured learning materials with intelligent recommendations.
+                </p>
             </div>
-            
-            <div class="loading" id="loadingSection">
-                <div class="spinner"></div>
-                <p id="loadingText">Analyzing your lecture... This may take a few moments.</p>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-            </div>
+        </section>
 
-            <div id="errorMessage" class="error-message" style="display: none;"></div>
-        </div>
+        <section class="container">
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-text">Drop your lecture files here</div>
+                    <div class="upload-subtext">
+                        Supports MP3, WAV, OGG, M4A, FLAC, AAC • Max 500MB
+                    </div>
+                    <button class="btn" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-upload"></i>
+                        Choose Audio File
+                    </button>
+                    <input type="file" id="fileInput" class="file-input" accept=".mp3,.wav,.ogg,.m4a,.flac,.aac">
+                </div>
+                
+                <div class="loading" id="loadingSection">
+                    <div class="spinner"></div>
+                    <p class="loading-text" id="loadingText">Analyzing your lecture... This may take a few moments.</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
 
-        <div class="results-section" id="resultsSection">
-            <div class="tabs">
-                <div class="tab active" data-tab="summary">
-                    <i class="fas fa-file-alt"></i> Summary
-                </div>
-                <div class="tab" data-tab="topics">
-                    <i class="fas fa-tags"></i> Key Topics
-                </div>
-                <div class="tab" data-tab="questions">
-                    <i class="fas fa-question-circle"></i> Study Questions
-                </div>
-                <div class="tab" data-tab="resources">
-                    <i class="fas fa-video"></i> Related Videos
-                </div>
-                <div class="tab" data-tab="transcript">
-                    <i class="fas fa-file-text"></i> Transcript
-                </div>
+                <div id="errorMessage" class="error-message"></div>
             </div>
 
-            <div class="tab-content">
-                <div class="tab-pane active" id="summary">
-                    <div class="section-title">
-                        <i class="fas fa-chart-bar"></i>
-                        Lecture Summary
+            <div class="results-section" id="resultsSection">
+                <div class="tabs">
+                    <div class="tab active" data-tab="summary">
+                        <i class="fas fa-file-alt"></i>
+                        Summary
                     </div>
-                    <div class="summary-text" id="summaryText">
-                        Upload an audio file to see the AI-generated summary here.
+                    <div class="tab" data-tab="topics">
+                        <i class="fas fa-tags"></i>
+                        Topics
                     </div>
-                </div>
-
-                <div class="tab-pane" id="topics">
-                    <div class="section-title">
-                        <i class="fas fa-lightbulb"></i>
-                        Key Topics Covered
+                    <div class="tab" data-tab="questions">
+                        <i class="fas fa-question-circle"></i>
+                        Q&A
                     </div>
-                    <div class="topics-grid" id="topicsGrid">
-                        <div class="topic-tag">Upload audio to see topics</div>
+                    <div class="tab" data-tab="resources">
+                        <i class="fas fa-video"></i>
+                        Resources
                     </div>
-                </div>
-
-                <div class="tab-pane" id="questions">
-                    <div class="section-title">
-                        <i class="fas fa-brain"></i>
-                        Generated Study Questions
-                    </div>
-                    <ul class="questions-list" id="questionsList">
-                        <li class="question-item">
-                            <div class="question-text">Upload an audio file to see generated questions here.</div>
-                        </li>
-                    </ul>
-
-                    <div class="ask-section">
-                        <h4>Ask a Question About This Lecture:</h4>
-                        <input type="text" id="askInput" class="ask-input" placeholder="Type your question here..." disabled>
-                        <button id="askBtn" class="ask-btn" disabled>Ask Question</button>
+                    <div class="tab" data-tab="transcript">
+                        <i class="fas fa-file-text"></i>
+                        Transcript
                     </div>
                 </div>
 
-                <div class="tab-pane" id="resources">
-                    <div class="section-title">
-                        <i class="fas fa-play-circle"></i>
-                        Recommended Learning Resources
+                <div class="tab-content">
+                    <div class="tab-pane active" id="summary">
+                        <div class="section-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Lecture Summary
+                        </div>
+                        <div class="summary-text" id="summaryText">
+                            Upload an audio file to see the AI-generated summary here.
+                        </div>
                     </div>
-                    <div class="video-grid" id="videoGrid">
-                        <div class="video-card">
-                            <div class="video-thumbnail">
-                                <i class="fas fa-play"></i>
-                            </div>
-                            <div class="video-info">
-                                <div class="video-title">Upload audio to see recommendations</div>
-                                <div class="video-description">Related videos will appear here based on your lecture content.</div>
+
+                    <div class="tab-pane" id="topics">
+                        <div class="section-title">
+                            <i class="fas fa-lightbulb"></i>
+                            Key Topics
+                        </div>
+                        <div class="topics-grid" id="topicsGrid">
+                            <div class="topic-tag">Upload audio to see topics</div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="questions">
+                        <div class="section-title">
+                            <i class="fas fa-brain"></i>
+                            Study Questions
+                        </div>
+                        <ul class="questions-list" id="questionsList">
+                            <li class="question-item">
+                                <div class="question-text">Upload an audio file to see generated questions here.</div>
+                            </li>
+                        </ul>
+
+                        <div class="ask-section">
+                            <h4>Ask a Question About This Lecture</h4>
+                            <input type="text" id="askInput" class="ask-input" placeholder="Type your question here..." disabled>
+                            <button id="askBtn" class="btn" disabled>
+                                <i class="fas fa-paper-plane"></i>
+                                Ask Question
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="resources">
+                        <div class="section-title">
+                            <i class="fas fa-play-circle"></i>
+                            Learning Resources
+                        </div>
+                        <div class="video-grid" id="videoGrid">
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                                <div class="video-info">
+                                    <div class="video-title">Upload audio to see recommendations</div>
+                                    <div class="video-description">Related videos will appear here based on your lecture content.</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="tab-pane" id="transcript">
-                    <div class="section-title">
-                        <i class="fas fa-file-text"></i>
-                        Full Transcript
-                    </div>
-                    <div class="transcript-section" id="transcriptText">
-                        Upload an audio file to see the full transcript here.
+                    <div class="tab-pane" id="transcript">
+                        <div class="section-title">
+                            <i class="fas fa-file-text"></i>
+                            Full Transcript
+                        </div>
+                        <div class="transcript-section" id="transcriptText">
+                            Upload an audio file to see the full transcript here.
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script>
         // Global variables
         let currentSessionId = null;
-        const API_BASE_URL = 'http://localhost:5000'; // Change this to your Flask server URL
+        const API_BASE_URL = 'http://localhost:5000';
 
-        // File upload handling
+        // DOM elements
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const loadingSection = document.getElementById('loadingSection');
@@ -568,16 +781,14 @@
             }
         });
 
-        // Tab switching functionality
+        // Tab switching
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 const tabName = tab.dataset.tab;
                 
-                // Remove active class from all tabs and panes
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
                 
-                // Add active class to clicked tab and corresponding pane
                 tab.classList.add('active');
                 document.getElementById(tabName).classList.add('active');
             });
@@ -592,7 +803,6 @@
         });
 
         async function handleFileUpload(file) {
-            // Validate file type
             const allowedTypes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'audio/m4a', 'audio/flac', 'audio/aac'];
             const allowedExtensions = ['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac'];
             const fileExtension = file.name.split('.').pop().toLowerCase();
@@ -602,7 +812,6 @@
                 return;
             }
 
-            // Check file size (max 500MB as per Flask config)
             if (file.size > 500 * 1024 * 1024) {
                 showError('File size too large. Maximum size is 500MB.');
                 return;
@@ -634,7 +843,6 @@
                 const data = await response.json();
                 currentSessionId = data.session_id;
 
-                // Hide loading and show results
                 setTimeout(() => {
                     hideLoading();
                     displayResults(data);
@@ -675,17 +883,16 @@
             questionsList.innerHTML = '';
             
             if (data.questions && data.questions.length > 0) {
-                data.questions.forEach(question => {
+                data.questions.forEach((question, index) => {
                     const questionItem = document.createElement('li');
                     questionItem.className = 'question-item';
                     questionItem.innerHTML = `
                         <div class="question-text">${question}</div>
-                        <div class="answer" id="answer-${questionsList.children.length}"></div>
+                        <div class="answer" id="answer-${index}"></div>
                     `;
                     
-                    // Add click handler to show answer
                     questionItem.addEventListener('click', () => {
-                        const answerId = `answer-${Array.from(questionsList.children).indexOf(questionItem)}`;
+                        const answerId = `answer-${index}`;
                         const answerDiv = document.getElementById(answerId);
                         if (!answerDiv.classList.contains('show')) {
                             getQuestionAnswer(question, answerId);
@@ -744,9 +951,9 @@
             if (!question) return;
 
             const askBtn = document.getElementById('askBtn');
-            const originalText = askBtn.textContent;
+            const originalHTML = askBtn.innerHTML;
             askBtn.disabled = true;
-            askBtn.textContent = 'Processing...';
+            askBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
             try {
                 const response = await fetch(`${API_BASE_URL}/ask`, {
@@ -767,7 +974,6 @@
 
                 const data = await response.json();
                 
-                // Add the Q&A to the questions list
                 const questionsList = document.getElementById('questionsList');
                 const questionItem = document.createElement('li');
                 questionItem.className = 'question-item';
@@ -777,15 +983,14 @@
                 `;
                 questionsList.insertBefore(questionItem, questionsList.firstChild);
                 
-                // Clear input
                 document.getElementById('askInput').value = '';
 
             } catch (error) {
                 console.error('Error asking question:', error);
-                alert(`Failed to get answer: ${error.message}`);
+                showError(`Failed to get answer: ${error.message}`);
             } finally {
                 askBtn.disabled = false;
-                askBtn.textContent = originalText;
+                askBtn.innerHTML = originalHTML;
             }
         }
 
@@ -793,7 +998,7 @@
             if (!currentSessionId) return;
 
             const answerDiv = document.getElementById(answerId);
-            answerDiv.textContent = 'Loading answer...';
+            answerDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading answer...';
             answerDiv.classList.add('show');
 
             try {
