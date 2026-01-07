@@ -36,14 +36,24 @@ YouTube Data API (video recommendations)
 Lecturyzer/
 
 │── app.py                  # Flask backend (main entry point)
+
 │── requirements.txt        # Python dependencies
+
 │── README.md               # Project documentation
+
 │
+
 ├── static/                 # CSS, JS, images
+
 │
+
 ├── templates/              # HTML templates (frontend)
-│   └── index.html
+
+│ 
+└── index.html
+
 │
+
 ├── uploads/                # Uploaded audio files
 │
 └── utils/                  # Core application logic
