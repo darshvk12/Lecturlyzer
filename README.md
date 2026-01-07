@@ -34,6 +34,7 @@ YouTube Data API (video recommendations)
 
 # 📂 Project Structure
 Lecturyzer/
+
 │── app.py                  # Flask backend (main entry point)
 │── requirements.txt        # Python dependencies
 │── README.md               # Project documentation
@@ -77,8 +78,6 @@ Set up environment variables
 Create a .env file in the root directory with your API keys:
 
 OPENAI_API_KEY=your_openai_key
-YOUTUBE_API_KEY=your_youtube_key
-
 
 Run the app
 
